@@ -1,0 +1,25 @@
+[package]
+name = "led-backlighting-controller"
+version = "0.1.0"
+authors = ["Brian Vanderbusch <chief@hackerhappyhour.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+cortex-m-rtic = "0.6.0-alpha.2"
+cortex-m = "0.7.2"
+cortex-m-rt = "0.6.13"
+panic-halt = "0.2.0"
+
+[dependencies.stm32f3]
+version = "0.13.0"
+features = ["stm32f303", "rt"]
+
+[dependencies.rtt-target]
+version = "0.3.0"
+features = ["cortex-m"]
+
+[dependencies.stm32f3xx-hal]
+version = "0.6.1"
+features = ["stm32f303xc", "rt"]

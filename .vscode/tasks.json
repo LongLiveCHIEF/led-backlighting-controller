@@ -1,0 +1,18 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "shell",
+			"command": "cargo",
+      "args": [
+        "embed",
+        "--release"
+      ],
+			"group": {
+        "kind": "build",
+        "isDefault": true
+      },
+			"label": "Rust: cargo build - led-backlighting-controller"
+		}
+	]
+}
