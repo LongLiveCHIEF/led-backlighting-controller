@@ -23,7 +23,13 @@ mod app {
   fn init(cx: init::Context) -> (init::LateResources, init::Monotonics) {
 
     let pac = cx.device;
+
+    // see: https://github.com/probe-rs/probe-rs/issues/350#issuecomment-740550519
+    // prevents unrecoverable sleep that prevents flashing target device from probe
+    pac.RCC.ahbenr.modify(|_,w| w.dma1en().enabled());
+
     let mut rcc = pac.RCC.constrain();
+
     let mut gpiob = pac.GPIOB.split(&mut rcc.ahb);
 
     let mut led = gpiob.pb13.into_push_pull_output(&mut gpiob.moder, &mut gpiob.otyper);
@@ -46,8 +52,10 @@ mod app {
       }
   }
 
-  #[task]
-  fn hello(_: hello::Context) {
-    rprintln!("Hello, world!");
+  #[task(resources = [led])]
+  fn blink(mut cx: blink::Context) {
+    cx.resources.led.lock(|led| led.toggle().unwrap() );
+    rprintln!("toggling led");
   }
 }
+

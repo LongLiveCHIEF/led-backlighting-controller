@@ -22,4 +22,4 @@ features = ["cortex-m"]
 
 [dependencies.stm32f3xx-hal]
 version = "0.6.1"
-features = ["stm32f303xc", "rt"]
+features = ["stm32f303xc", "rt", "unproven"]
