@@ -29,15 +29,16 @@ mod app {
     pac.RCC.ahbenr.modify(|_,w| w.dma1en().enabled());
 
     let mut rcc = pac.RCC.constrain();
-
     let mut gpiob = pac.GPIOB.split(&mut rcc.ahb);
-
     let mut led = gpiob.pb13.into_push_pull_output(&mut gpiob.moder, &mut gpiob.otyper);
 
     led.set_low().ok();
 
     rtt_init_print!();
     rprintln!("Initialization complete");
+
+    blink::spawn().unwrap();
+
    ( init::LateResources { led, }, init::Monotonics())
   }
 
