@@ -13,14 +13,24 @@ mod app {
     gpio::{gpiob::PB13, Output, PushPull},
     prelude::*
   };
+  use dwt_systick_monotonic::DwtSystick;
+  use rtic::time::duration::Seconds;
 
   #[resources]
   struct Resources {
     led: PB13<Output<PushPull>>,
   }
 
-  #[init]
+  #[monotonic(binds = SysTick, default = true)]
+  type MyMono = DwtSystick<8_000_000>;
+
+  #[init()]
   fn init(cx: init::Context) -> (init::LateResources, init::Monotonics) {
+    let mut dcb = cx.core.DCB;
+    let dwt = cx.core.DWT;
+    let systick = cx.core.SYST;
+
+    let mono = DwtSystick::new(&mut dcb, dwt, systick, 8_000_000);
 
     let pac = cx.device;
 
@@ -37,9 +47,9 @@ mod app {
     rtt_init_print!();
     rprintln!("Initialization complete");
 
-    blink::spawn().unwrap();
+    blink::spawn_after(Seconds(1_u32)).unwrap();
 
-   ( init::LateResources { led, }, init::Monotonics())
+   ( init::LateResources { led, }, init::Monotonics(mono))
   }
 
       // Optional idle task, if left out idle will be a WFI.
@@ -57,6 +67,7 @@ mod app {
   fn blink(mut cx: blink::Context) {
     cx.resources.led.lock(|led| led.toggle().unwrap() );
     rprintln!("toggling led");
+    blink::spawn_after(Seconds(1_u32)).unwrap();
   }
 }
 
