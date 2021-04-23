@@ -1,73 +1,70 @@
 #![no_main]
 #![no_std]
 
-use stm32f3xx_hal as _;
+extern crate xiao_m0 as hal;
 use panic_halt as _;
 
-#[rtic::app(device = stm32f3xx_hal::stm32, 
-  peripherals = true, 
-  dispatchers=[USART1_EXTI25])]
+#[rtic::app(device = hal::pac, peripherals = true, dispatchers = [EVSYS])]
 mod app {
-  use rtt_target::{ rprintln, rtt_init_print };
-  use stm32f3xx_hal::{
-    gpio::{gpiob::PB13, Output, PushPull},
-    prelude::*
-  };
-  use dwt_systick_monotonic::DwtSystick;
-  use rtic::time::duration::Seconds;
+    use rtt_target::{ rprintln, rtt_init_print };
+    use hal::pac::Peripherals;
+    use hal::clock::{ClockGenId, ClockSource, GenericClockController};
+    use hal::rtc::{Count32Mode, Rtc};
+    use rtic_monotonic::Extensions;
 
-  #[resources]
-  struct Resources {
-    led: PB13<Output<PushPull>>,
-  }
+    #[resources]
+    struct Resources {
+    led:
+        hal::gpio::Pin<hal::gpio::v2::PA17, hal::gpio::v2::Output<hal::gpio::v2::PushPull>> ,
+    }
 
-  #[monotonic(binds = SysTick, default = true)]
-  type MyMono = DwtSystick<8_000_000>;
+    #[monotonic(binds = RTC, default = true)]
+    type RtcMonotonic = Rtc<Count32Mode>;
 
-  #[init()]
-  fn init(cx: init::Context) -> (init::LateResources, init::Monotonics) {
-    let mut dcb = cx.core.DCB;
-    let dwt = cx.core.DWT;
-    let systick = cx.core.SYST;
+    #[init()]
+    fn init(cx: init::Context) -> (init::LateResources, init::Monotonics) {
+        let mut peripherals: Peripherals = cx.device;
+        let mut pins = hal::Pins::new(peripherals.PORT);
+        let mut clocks = GenericClockController::with_external_32kosc(
+            peripherals.GCLK,
+            &mut peripherals.PM,
+            &mut peripherals.SYSCTRL,
+            &mut peripherals.NVMCTRL,
+        );
+        let _gclk = clocks.gclk0();
+        let rtc_clock_src = clocks
+            .configure_gclk_divider_and_source(ClockGenId::GCLK2, 1, ClockSource::XOSC32K, false)
+            .unwrap();
+        clocks.configure_standby(ClockGenId::GCLK2, true);
+        let rtc_clock = clocks.rtc(&rtc_clock_src).unwrap();
+        let rtc = Rtc::count32_mode(peripherals.RTC, rtc_clock.freq(), &mut peripherals.PM);
 
-    let mono = DwtSystick::new(&mut dcb, dwt, systick, 8_000_000);
+        let led = pins.led0.into_open_drain_output(&mut pins.port);
 
-    let pac = cx.device;
+        rtt_init_print!();
+        rprintln!("Initialization complete");
 
-    // see: https://github.com/probe-rs/probe-rs/issues/350#issuecomment-740550519
-    // prevents unrecoverable sleep that prevents flashing target device from probe
-    pac.RCC.ahbenr.modify(|_,w| w.dma1en().enabled());
+        blink::spawn().unwrap();
 
-    let mut rcc = pac.RCC.constrain();
-    let mut gpiob = pac.GPIOB.split(&mut rcc.ahb);
-    let mut led = gpiob.pb13.into_push_pull_output(&mut gpiob.moder, &mut gpiob.otyper);
-
-    led.set_low().ok();
-
-    rtt_init_print!();
-    rprintln!("Initialization complete");
-
-    blink::spawn_after(Seconds(1_u32)).unwrap();
-
-   ( init::LateResources { led, }, init::Monotonics(mono))
-  }
+        ( init::LateResources { led, }, init::Monotonics(rtc))
+    }
 
       // Optional idle task, if left out idle will be a WFI.
-  #[idle]
-  fn idle(_cx: idle::Context) -> ! {
-      rprintln!("Hello from idle!");
+    #[idle]
+    fn idle(_cx: idle::Context) -> ! {
+        rprintln!("Hello from idle!");
 
-      loop {
-          // Do some work or WFI.
-          continue;
-      }
-  }
+        loop {
+            // Do some work or WFI.
+            continue;
+        }
+    }
 
-  #[task(resources = [led])]
-  fn blink(mut cx: blink::Context) {
-    cx.resources.led.lock(|led| led.toggle().unwrap() );
-    rprintln!("toggling led");
-    blink::spawn_after(Seconds(1_u32)).unwrap();
-  }
+    #[task(resources = [led])]
+    fn blink(mut cx: blink::Context) {
+        cx.resources.led.lock(|led| led.toggle());
+        rprintln!("toggling led");
+        blink::spawn_after(1_u32.seconds()).ok();
+    }
 }
 
