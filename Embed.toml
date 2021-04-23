@@ -1,12 +1,12 @@
 [default.probe]
 protocol = "Swd"
-speed = 28000
+speed = 400
 
 [default.flashing]
 enabled = true
 
 [default.general]
-chip = "STM32F303VCTX"
+chip = "ATSAMD21GA"
 
 [default.rtt]
 enabled = true
