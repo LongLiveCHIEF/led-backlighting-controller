@@ -23,3 +23,8 @@ features = ["cortex-m"]
 atsamd-hal = { path = "../atsamd/hal"}
 xiao_m0 = { path = "../atsamd/boards/xiao_m0" }
 atsamd21g = { path = "../atsamd/pac/atsamd21g" }
+
+[[bin]]
+name = "led-backlighting-controller"
+test = false
+bench = false

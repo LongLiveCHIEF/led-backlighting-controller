@@ -1,12 +1,16 @@
 [default.probe]
+#usb_vid = "1366"
+#usb_pid = "0101"
 protocol = "Swd"
-speed = 400
+speed = 4000
 
 [default.flashing]
 enabled = true
+restore_unwritten_bytes = true
+do_chip_erase = false
 
 [default.general]
-chip = "ATSAMD21GA"
+chip = "ATSAMD21E17A"
 
 [default.rtt]
 enabled = true

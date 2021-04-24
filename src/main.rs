@@ -6,11 +6,11 @@ use panic_halt as _;
 
 #[rtic::app(device = hal::pac, peripherals = true, dispatchers = [EVSYS])]
 mod app {
-    use rtt_target::{ rprintln, rtt_init_print };
     use hal::pac::Peripherals;
     use hal::clock::{ClockGenId, ClockSource, GenericClockController};
     use hal::rtc::{Count32Mode, Rtc};
     use rtic_monotonic::Extensions;
+    use rtt_target::{rprintln, rtt_init_print};
 
     #[resources]
     struct Resources {
@@ -42,8 +42,7 @@ mod app {
         let led = pins.led0.into_open_drain_output(&mut pins.port);
 
         rtt_init_print!();
-        rprintln!("Initialization complete");
-
+        rprintln!("Initialization complete!");
         blink::spawn().unwrap();
 
         ( init::LateResources { led, }, init::Monotonics(rtc))
