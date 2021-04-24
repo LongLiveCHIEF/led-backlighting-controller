@@ -2,7 +2,7 @@
 #usb_vid = "1366"
 #usb_pid = "0101"
 protocol = "Swd"
-speed = 4000
+speed = 1800
 
 [default.flashing]
 enabled = true
