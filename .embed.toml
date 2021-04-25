@@ -1,12 +1,17 @@
 [default.probe]
+# default to STLink V2-1 probe
+usb_vid = "0483"
+usb_pid = "374b"
 protocol = "Swd"
-speed = 28000
+speed = 1800
 
 [default.flashing]
 enabled = true
+restore_unwritten_bytes = true
+do_chip_erase = false
 
 [default.general]
-chip = "STM32F303VCTX"
+chip = "ATSAMD21E17A"
 
 [default.rtt]
 enabled = true
