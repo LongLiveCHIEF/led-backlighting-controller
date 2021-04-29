@@ -14,6 +14,9 @@ rtic-monotonic = "0.1.0-alpha.0"
 atsamd-hal = { version = "0.12.0", features = ["samd21g", "rtic"] }
 xiao_m0 = "0.9.0"
 panic-halt = "0.2.0"
+smart-leds = "0.3.0"
+ws2812-spi = "0.4.0"
+atsamd21g = {version = "0.9.0", features = ["rt"]}
 
 [dependencies.rtt-target]
 version = "0.3.0"

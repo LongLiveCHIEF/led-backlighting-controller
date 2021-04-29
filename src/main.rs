@@ -6,24 +6,30 @@ use panic_halt as _;
 
 #[rtic::app(device = hal::pac, peripherals = true, dispatchers = [EVSYS])]
 mod app {
-    use hal::pac::Peripherals;
     use hal::clock::{ClockGenId, ClockSource, GenericClockController};
     use hal::rtc::{Count32Mode, Rtc};
+    use hal::time::MegaHertz;
+    use hal::spi_master;
+    use hal::gpio::{Pa5, Pa6, Pa7, PfD};
+    use hal::sercom::{Sercom0Pad1, Sercom0Pad2, Sercom0Pad3};
+    use hal::prelude::*;
     use rtic_monotonic::Extensions;
     use rtt_target::{rprintln, rtt_init_print};
-
-    #[resources]
-    struct Resources {
-    led:
-        hal::gpio::Pin<hal::gpio::v2::PA17, hal::gpio::v2::Output<hal::gpio::v2::PushPull>> ,
-    }
+    use ws2812_spi::Ws2812 as ws2812;
+    use smart_leds::hsv::{hsv2rgb, Hsv};
+    use smart_leds::SmartLedsWrite;
 
     #[monotonic(binds = RTC, default = true)]
     type RtcMonotonic = Rtc<Count32Mode>;
 
+    #[resources]
+    struct Resources {
+        ledString: ws2812<hal::sercom::SPIMaster0<Sercom0Pad1<Pa5<PfD>>, Sercom0Pad2<Pa6<PfD>>, Sercom0Pad3<Pa7<PfD>>>>,
+    }
+
     #[init()]
     fn init(cx: init::Context) -> (init::LateResources, init::Monotonics) {
-        let mut peripherals: Peripherals = cx.device;
+        let mut peripherals = cx.device;
         let mut pins = hal::Pins::new(peripherals.PORT);
         let mut clocks = GenericClockController::with_external_32kosc(
             peripherals.GCLK,
@@ -31,6 +37,8 @@ mod app {
             &mut peripherals.SYSCTRL,
             &mut peripherals.NVMCTRL,
         );
+
+        // initialize monotonic
         let _gclk = clocks.gclk0();
         let rtc_clock_src = clocks
             .configure_gclk_divider_and_source(ClockGenId::GCLK2, 1, ClockSource::XOSC32K, false)
@@ -39,13 +47,23 @@ mod app {
         let rtc_clock = clocks.rtc(&rtc_clock_src).unwrap();
         let rtc = Rtc::count32_mode(peripherals.RTC, rtc_clock.freq(), &mut peripherals.PM);
 
-        let led = pins.led0.into_open_drain_output(&mut pins.port);
+        let spi = spi_master(
+            &mut clocks,
+            MegaHertz(3),
+            peripherals.SERCOM0,
+            &mut peripherals.PM,
+            pins.a8,
+            pins.a10,
+            pins.a9,
+            &mut pins.port
+        );
+        let ledString = ws2812::new(spi);
 
         rtt_init_print!();
         rprintln!("Initialization complete!");
-        blink::spawn().unwrap();
+        rainbow::spawn().unwrap();
 
-        ( init::LateResources { led, }, init::Monotonics(rtc))
+        ( init::LateResources { ledString }, init::Monotonics(rtc))
     }
 
       // Optional idle task, if left out idle will be a WFI.
@@ -59,11 +77,20 @@ mod app {
         }
     }
 
-    #[task(resources = [led])]
-    fn blink(mut cx: blink::Context) {
-        cx.resources.led.lock(|led| led.toggle());
-        rprintln!("toggling led");
-        blink::spawn_after(1_u32.seconds()).ok();
+    #[task(resources = [ledString])]
+    fn rainbow(mut cx: rainbow::Context) {
+        cx.resources.ledString.lock(|ledString| {
+            for j in 0..255u8 {
+                let colors = [hsv2rgb(Hsv {
+                    hue: j,
+                    sat: 255,
+                    val: 2,
+                })];
+                ledString.write(colors.iter().cloned()).unwrap();
+            }
+        });
+        rprintln!("Setting colors");
+        rainbow::spawn_after(1_u32.seconds()).ok();
     }
 }
 
