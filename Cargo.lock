@@ -266,10 +266,12 @@ dependencies = [
  "cortex-m 0.7.2",
  "cortex-m-rt",
  "cortex-m-rtic",
+ "embedded-hal",
  "panic-halt",
  "rtic-monotonic",
  "rtt-target",
  "smart-leds",
+ "smart-leds-trait",
  "ws2812-spi",
  "xiao_m0",
 ]
