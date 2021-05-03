@@ -17,7 +17,7 @@ mod app {
     use rtt_target::{rprintln, rtt_init_print};
     use ws2812_spi::Ws2812 as ws2812;
     use smart_leds::hsv::{hsv2rgb, Hsv};
-    use smart_leds::SmartLedsWrite;
+    use smart_leds::{RGB8, SmartLedsWrite};
 
     #[monotonic(binds = RTC, default = true)]
     type RtcMonotonic = Rtc<Count32Mode>;
@@ -89,7 +89,17 @@ mod app {
                 ledString.write(colors.iter().cloned()).unwrap();
             }
         });
-        rprintln!("Setting colors");
+        rprintln!("leds set to rainbow");
+        clear_leds::spawn_after(3_u32.seconds()).ok();
+    }
+
+    #[task(resources = [ledString])]
+    fn clear_leds(mut cx: clear_leds::Context) {
+        const NUM_LEDS: usize = 19;
+        cx.resources.ledString.lock(|ledString| {
+            ledString.write([RGB8::default(); NUM_LEDS].iter().cloned()).unwrap();
+        });
+        rprintln!("leds cleared");
         rainbow::spawn_after(1_u32.seconds()).ok();
     }
 }
