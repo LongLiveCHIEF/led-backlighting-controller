@@ -79,7 +79,6 @@ mod app {
 
     #[task(resources = [ledString])]
     fn rainbow(mut cx: rainbow::Context) {
-        rprintln!("Setting colors");
         cx.resources.ledString.lock(|ledString| {
             for j in 0..255u8 {
                 let colors = [hsv2rgb(Hsv {
@@ -90,16 +89,17 @@ mod app {
                 ledString.write(colors.iter().cloned()).unwrap();
             }
         });
-        clear_leds::spawn_after(1_u32.seconds()).ok();
+        rprintln!("leds set to rainbow");
+        clear_leds::spawn_after(3_u32.seconds()).ok();
     }
 
     #[task(resources = [ledString])]
     fn clear_leds(mut cx: clear_leds::Context) {
-        rprintln!("turning off leds");
         const NUM_LEDS: usize = 19;
         cx.resources.ledString.lock(|ledString| {
             ledString.write([RGB8::default(); NUM_LEDS].iter().cloned()).unwrap();
         });
+        rprintln!("leds cleared");
         rainbow::spawn_after(1_u32.seconds()).ok();
     }
 }

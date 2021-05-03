@@ -17,9 +17,11 @@ use smart_leds::SmartLedsWrite;
 use smart_leds_trait::RGB8;
 
 use cortex_m_rt::entry;
+use rtt_target::{rprintln, rtt_init_print};
 
 #[entry]
 fn main() -> ! {
+    rtt_init_print!();
     let mut peripherals = Peripherals::take().unwrap();
     let core = CorePeripherals::take().unwrap();
     let mut clocks = GenericClockController::with_internal_32kosc(
@@ -60,8 +62,10 @@ fn main() -> ! {
             }
         }
         ws.write(data.iter().cloned()).unwrap();
+        rprintln!("colors set");
         delay.delay_ms(1000 as u16);
         ws.write(empty.iter().cloned()).unwrap();
+        rprintln!("colors cleared");
         delay.delay_ms(1000 as u16);
     }
 }
