@@ -33,3 +33,6 @@ atsamd21g = { path = "../atsamd/pac/atsamd21g" }
 name = "led-backlighting-controller"
 test = false
 bench = false
+
+[profile.dev]
+opt-level = 3
