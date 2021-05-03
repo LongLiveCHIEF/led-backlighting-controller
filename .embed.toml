@@ -14,6 +14,6 @@ do_chip_erase = false
 chip = "ATSAMD21E17A"
 
 [default.rtt]
-enabled = true
+enabled = false
 show_timestamps = true
 timeout = 3000

@@ -35,7 +35,7 @@ fn main() -> ! {
     let gclk0 = clocks.gclk0();
     let timer_clock = clocks.tcc2_tc3(&gclk0).unwrap();
     let mut timer = TimerCounter::tc3_(&timer_clock, peripherals.TC3, &mut peripherals.PM);
-    timer.start(5.khz());
+    timer.start(8.khz());
 
     let spi = crate::hal::spi_master(
         &mut clocks,
@@ -47,7 +47,7 @@ fn main() -> ! {
         pins.a9,
         &mut pins.port,
     );
-    const NUM_LEDS: usize = 20;
+    const NUM_LEDS: usize = 19;
     let mut data: [RGB8; NUM_LEDS] = [RGB8::default(); NUM_LEDS];
     let empty: [RGB8; NUM_LEDS] = [RGB8::default(); NUM_LEDS];
     let mut ws = Ws2812::new(spi);

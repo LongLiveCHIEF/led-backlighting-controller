@@ -15,7 +15,7 @@ atsamd-hal = { version = "0.12.0", features = ["samd21g", "rtic"] }
 xiao_m0 = "0.9.0"
 panic-halt = "0.2.0"
 smart-leds = "0.3.0"
-ws2812-spi = "0.4.0"
+ws2812-spi = {version ="0.4.0", features = ["mosi_idle_high"]}
 atsamd21g = {version = "0.9.0", features = ["rt"]}
 embedded-hal = "0.2.5"
 smart-leds-trait = "0.2.1"
