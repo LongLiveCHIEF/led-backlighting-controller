@@ -35,7 +35,7 @@ fn main() -> ! {
     let gclk0 = clocks.gclk0();
     let timer_clock = clocks.tcc2_tc3(&gclk0).unwrap();
     let mut timer = TimerCounter::tc3_(&timer_clock, peripherals.TC3, &mut peripherals.PM);
-    timer.start(8.khz());
+    timer.start(48.khz());
 
     let spi = crate::hal::spi_master(
         &mut clocks,
