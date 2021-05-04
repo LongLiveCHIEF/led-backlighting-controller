@@ -16,8 +16,9 @@ mod app {
     use rtic_monotonic::Extensions;
     use rtt_target::{rprintln, rtt_init_print};
     use ws2812_spi::Ws2812 as ws2812;
-    use smart_leds::hsv::{hsv2rgb, Hsv};
-    use smart_leds::{RGB8, SmartLedsWrite};
+    use smart_leds::{RGB8, SmartLedsWrite, colors::BLUE as COLOR};
+
+    const NUM_LEDS: usize = 20;
 
     #[monotonic(binds = RTC, default = true)]
     type RtcMonotonic = Rtc<Count32Mode>;
@@ -61,7 +62,7 @@ mod app {
 
         rtt_init_print!();
         rprintln!("Initialization complete!");
-        rainbow::spawn().unwrap();
+        set_solid_color::spawn().unwrap();
 
         ( init::LateResources { ledString }, init::Monotonics(rtc))
     }
@@ -78,29 +79,20 @@ mod app {
     }
 
     #[task(resources = [ledString])]
-    fn rainbow(mut cx: rainbow::Context) {
+    fn set_solid_color(mut cx: set_solid_color::Context) {
         cx.resources.ledString.lock(|ledString| {
-            for j in 0..255u8 {
-                let colors = [hsv2rgb(Hsv {
-                    hue: j,
-                    sat: 255,
-                    val: 2,
-                })];
-                ledString.write(colors.iter().cloned()).unwrap();
-            }
+            let leds: [RGB8; NUM_LEDS] = [COLOR; NUM_LEDS];
+            ledString.write(leds.iter().cloned()).unwrap();
         });
-        rprintln!("leds set to rainbow");
-        clear_leds::spawn_after(3_u32.seconds()).ok();
+        rprintln!("leds set to {}", COLOR);
     }
 
     #[task(resources = [ledString])]
     fn clear_leds(mut cx: clear_leds::Context) {
-        const NUM_LEDS: usize = 19;
         cx.resources.ledString.lock(|ledString| {
             ledString.write([RGB8::default(); NUM_LEDS].iter().cloned()).unwrap();
         });
         rprintln!("leds cleared");
-        rainbow::spawn_after(1_u32.seconds()).ok();
     }
 }
 
