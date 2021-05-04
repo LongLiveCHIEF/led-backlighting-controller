@@ -10,13 +10,13 @@ mod app {
     use hal::rtc::{Count32Mode, Rtc};
     use hal::time::MegaHertz;
     use hal::spi_master;
-    use hal::gpio::{Pa5, Pa6, Pa7, PfD};
+    use hal::gpio::{ Pa5, Pa6, Pa7, PfD};
     use hal::sercom::{Sercom0Pad1, Sercom0Pad2, Sercom0Pad3};
     use hal::prelude::*;
     use rtic_monotonic::Extensions;
     use rtt_target::{rprintln, rtt_init_print};
     use ws2812_spi::Ws2812 as ws2812;
-    use smart_leds::{RGB8, SmartLedsWrite, colors::BLUE as COLOR};
+    use smart_leds::{brightness, RGB8, SmartLedsWrite, colors::BLUE as COLOR};
 
     const NUM_LEDS: usize = 20;
 
@@ -26,6 +26,7 @@ mod app {
     #[resources]
     struct Resources {
         ledString: ws2812<hal::sercom::SPIMaster0<Sercom0Pad1<Pa5<PfD>>, Sercom0Pad2<Pa6<PfD>>, Sercom0Pad3<Pa7<PfD>>>>,
+        //button: hal::gpio::Pin<hal::gpio::v2::PB08, hal::gpio::v2::Input<hal::gpio::v2::Floating>>,
     }
 
     #[init()]
@@ -48,6 +49,7 @@ mod app {
         let rtc_clock = clocks.rtc(&rtc_clock_src).unwrap();
         let rtc = Rtc::count32_mode(peripherals.RTC, rtc_clock.freq(), &mut peripherals.PM);
 
+        // setup led control SPI
         let spi = spi_master(
             &mut clocks,
             MegaHertz(3),
@@ -60,6 +62,8 @@ mod app {
         );
         let ledString = ws2812::new(spi);
 
+        // setup color/mode control button
+        //let button: <hal::gpio::PfA> = pins.
         rtt_init_print!();
         rprintln!("Initialization complete!");
         set_solid_color::spawn().unwrap();
@@ -82,7 +86,7 @@ mod app {
     fn set_solid_color(mut cx: set_solid_color::Context) {
         cx.resources.ledString.lock(|ledString| {
             let leds: [RGB8; NUM_LEDS] = [COLOR; NUM_LEDS];
-            ledString.write(leds.iter().cloned()).unwrap();
+            ledString.write(brightness(leds.iter().cloned(), 8)).unwrap();
         });
         rprintln!("leds set to {}", COLOR);
     }
