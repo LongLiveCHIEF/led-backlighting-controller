@@ -26,7 +26,6 @@ mod app {
     #[resources]
     struct Resources {
         ledString: ws2812<hal::sercom::SPIMaster0<Sercom0Pad1<Pa5<PfD>>, Sercom0Pad2<Pa6<PfD>>, Sercom0Pad3<Pa7<PfD>>>>,
-        //button: hal::gpio::Pin<hal::gpio::v2::PB08, hal::gpio::v2::Input<hal::gpio::v2::Floating>>,
     }
 
     #[init()]
@@ -62,8 +61,6 @@ mod app {
         );
         let ledString = ws2812::new(spi);
 
-        // setup color/mode control button
-        //let button: <hal::gpio::PfA> = pins.
         rtt_init_print!();
         rprintln!("Initialization complete!");
         set_solid_color::spawn().unwrap();
