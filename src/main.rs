@@ -10,7 +10,9 @@ mod app {
     use hal::rtc::{Count32Mode, Rtc};
     use hal::time::MegaHertz;
     use hal::spi_master;
-    use hal::gpio::{ Pa5, Pa6, Pa7, PfD};
+    use hal::gpio::{ Pa5, Pa6, Pa7, PfD, PfA, v2::{FloatingInput, PB08}};
+    use hal::eic::pin::ExtInt8;
+    use hal::gpio::v2::{PB08::*, Alternate, A};
     use hal::sercom::{Sercom0Pad1, Sercom0Pad2, Sercom0Pad3};
     use hal::prelude::*;
     use rtic_monotonic::Extensions;
@@ -61,11 +63,16 @@ mod app {
         );
         let ledString = ws2812::new(spi);
 
+        let mut v2Pins = hal::gpio::v2::Pins::new(peripherals.PORT);
+        let mut button = v2Pins.pb08.into_floating_input();
+        button.enable_interrupt();
+
+
         rtt_init_print!();
         rprintln!("Initialization complete!");
         set_solid_color::spawn().unwrap();
 
-        ( init::LateResources { ledString }, init::Monotonics(rtc))
+        ( init::LateResources { ledString, button }, init::Monotonics(rtc))
     }
 
       // Optional idle task, if left out idle will be a WFI.
