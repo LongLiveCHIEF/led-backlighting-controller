@@ -50,7 +50,7 @@ fn main() -> ! {
         pins.a9,
         &mut pins.port,
     );
-    const NUM_LEDS: usize = 19;
+    const NUM_LEDS: usize = 20;
     let mut data: [RGB8; NUM_LEDS] = [RGB8::default(); NUM_LEDS];
     let mut ws = Ws2812::new(spi);
     loop {
