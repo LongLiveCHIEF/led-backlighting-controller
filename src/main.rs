@@ -4,7 +4,7 @@
 extern crate xiao_m0 as hal;
 use panic_halt as _;
 
-#[rtic::app(device = hal::pac, peripherals = true, dispatchers = [EVSYS])]
+#[rtic::app(device = hal::pac, peripherals = true, dispatchers = [TCC0])]
 mod app {
     use hal::clock::{ClockGenId, ClockSource, GenericClockController};
     use hal::rtc::{Count32Mode, Rtc};
