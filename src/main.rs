@@ -10,9 +10,8 @@ mod app {
     use hal::rtc::{Count32Mode, Rtc};
     use hal::time::MegaHertz;
     use hal::spi_master;
-    use hal::gpio::{ Pa5, Pa6, Pa7, PfD, PfA, v2::{FloatingInput, PB08}};
-    use hal::eic::pin::ExtInt8;
-    use hal::gpio::v2::{PB08::*, Alternate, A};
+    use hal::gpio::{ Pb8, Pa5, Pa6, Pa7, PfD, PfA};
+    use hal::eic::{pin::Sense, EIC};
     use hal::sercom::{Sercom0Pad1, Sercom0Pad2, Sercom0Pad3};
     use hal::prelude::*;
     use rtic_monotonic::Extensions;
@@ -28,6 +27,7 @@ mod app {
     #[resources]
     struct Resources {
         ledString: ws2812<hal::sercom::SPIMaster0<Sercom0Pad1<Pa5<PfD>>, Sercom0Pad2<Pa6<PfD>>, Sercom0Pad3<Pa7<PfD>>>>,
+        button: hal::eic::pin::ExtInt8<hal::gpio::Input<hal::gpio::Floating>>,
     }
 
     #[init()]
@@ -42,7 +42,6 @@ mod app {
         );
 
         // initialize monotonic
-        let _gclk = clocks.gclk0();
         let rtc_clock_src = clocks
             .configure_gclk_divider_and_source(ClockGenId::GCLK2, 1, ClockSource::XOSC32K, false)
             .unwrap();
@@ -63,10 +62,13 @@ mod app {
         );
         let ledString = ws2812::new(spi);
 
-        let mut v2Pins = hal::gpio::v2::Pins::new(peripherals.PORT);
-        let mut button = v2Pins.pb08.into_floating_input();
-        button.enable_interrupt();
-
+        // initialize color control button
+        let gclk0 = clocks.gclk0();
+        let eic_clock = clocks.eic(&gclk0).unwrap();
+        let mut eic = EIC::init(&mut peripherals.PM, eic_clock, peripherals.EIC);
+        let mut button = pins.a6.into_ei(&mut pins.port);
+        button.sense(&mut eic, Sense::HIGH);
+        button.enable_interrupt(&mut eic);
 
         rtt_init_print!();
         rprintln!("Initialization complete!");
@@ -102,5 +104,12 @@ mod app {
         });
         rprintln!("leds cleared");
     }
-}
 
+    #[task(binds = EIC)]
+    fn boop(mut cx: boop::Context) {
+        cx.resources.button.lock(|button| {
+            rprintln!("button pressed");
+            button.clear_interrupt();
+        })
+    }
+}
