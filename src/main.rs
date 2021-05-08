@@ -10,8 +10,8 @@ mod app {
     use hal::rtc::{Count32Mode, Rtc};
     use hal::time::MegaHertz;
     use hal::spi_master;
-    use hal::gpio::{ Pb8, Pa5, Pa6, Pa7, PfD, PfA};
-    use hal::eic::{pin::Sense, EIC};
+    use hal::gpio::{ Input, Floating, Pin, Pb8, Pa5, Pa6, Pa7, PfD, PfA};
+    use hal::eic::{pin::{Sense, ExtInt8}, EIC};
     use hal::sercom::{Sercom0Pad1, Sercom0Pad2, Sercom0Pad3};
     use hal::prelude::*;
     use rtic_monotonic::Extensions;
@@ -27,7 +27,7 @@ mod app {
     #[resources]
     struct Resources {
         ledString: ws2812<hal::sercom::SPIMaster0<Sercom0Pad1<Pa5<PfD>>, Sercom0Pad2<Pa6<PfD>>, Sercom0Pad3<Pa7<PfD>>>>,
-        button: hal::eic::pin::ExtInt8<hal::gpio::Input<hal::gpio::Floating>>,
+        button: ExtInt8<Pb8<PfA>>,
     }
 
     #[init()]
@@ -105,7 +105,7 @@ mod app {
         rprintln!("leds cleared");
     }
 
-    #[task(binds = EIC)]
+    #[task(binds = EIC, resources=[button], priority = 2)]
     fn boop(mut cx: boop::Context) {
         cx.resources.button.lock(|button| {
             rprintln!("button pressed");
