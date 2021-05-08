@@ -17,7 +17,7 @@ mod app {
     use rtic_monotonic::Extensions;
     use rtt_target::{rprintln, rtt_init_print};
     use ws2812_spi::Ws2812 as ws2812;
-    use smart_leds::{brightness, RGB8, SmartLedsWrite, colors::BLUE as COLOR};
+    use smart_leds::{brightness, RGB8, SmartLedsWrite, colors::RED as COLOR};
 
     const NUM_LEDS: usize = 20;
 
@@ -92,7 +92,7 @@ mod app {
     fn set_solid_color(mut cx: set_solid_color::Context) {
         cx.resources.ledString.lock(|ledString| {
             let leds: [RGB8; NUM_LEDS] = [COLOR; NUM_LEDS];
-            ledString.write(brightness(leds.iter().cloned(), 8)).unwrap();
+            ledString.write(brightness(leds.iter().cloned(), 32)).unwrap();
         });
         rprintln!("leds set to {}", COLOR);
     }
