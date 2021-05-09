@@ -268,6 +268,7 @@ dependencies = [
  "cortex-m-rtic",
  "embedded-hal",
  "panic-halt",
+ "panic-rtt-target",
  "rtic-monotonic",
  "rtt-target",
  "smart-leds",
@@ -380,6 +381,16 @@ name = "panic-halt"
 version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "de96540e0ebde571dc55c73d60ef407c653844e6f9a1e2fdbd40c07b9252d812"
+
+[[package]]
+name = "panic-rtt-target"
+version = "0.1.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0d6ab67bc881453e4c90f958c657c1303670ea87bc1a16e87fd71a40f656dce9"
+dependencies = [
+ "cortex-m 0.7.2",
+ "rtt-target",
+]
 
 [[package]]
 name = "paste"

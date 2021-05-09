@@ -2,7 +2,7 @@
 #![no_std]
 
 extern crate xiao_m0 as hal;
-use panic_halt as _;
+use panic_rtt_target as _;
 
 #[rtic::app(device = hal::pac, peripherals = true, dispatchers = [TCC0])]
 mod app {

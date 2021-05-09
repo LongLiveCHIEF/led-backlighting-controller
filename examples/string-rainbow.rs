@@ -1,7 +1,7 @@
 #![no_std]
 #![no_main]
 
-use panic_halt as _;
+use panic_rtt_target as _;
 
 use xiao_m0 as hal;
 use ws2812_spi as ws2812;
