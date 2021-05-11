@@ -15,6 +15,7 @@ mod app {
     use hal::sercom::{Sercom0Pad1, Sercom0Pad2, Sercom0Pad3};
     use hal::prelude::*;
     use rtic_monotonic::Extensions;
+    use rtic::time::{duration::Milliseconds, Instant};
     use rtt_target::{rprintln, rtt_init_print};
     use ws2812_spi::Ws2812 as ws2812;
     use smart_leds::{brightness, RGB8, SmartLedsWrite, colors::RED as COLOR};
@@ -67,7 +68,7 @@ mod app {
         let eic_clock = clocks.eic(&gclk0).unwrap();
         let mut eic = EIC::init(&mut peripherals.PM, eic_clock, peripherals.EIC);
         let mut button = pins.a6.into_ei(&mut pins.port);
-        button.sense(&mut eic, Sense::HIGH);
+        button.sense(&mut eic, Sense::BOTH);
         button.enable_interrupt(&mut eic);
 
         rtt_init_print!();
@@ -106,10 +107,13 @@ mod app {
     }
 
     #[task(binds = EIC, resources=[button], priority = 2)]
-    fn boop(mut cx: boop::Context) {
-        cx.resources.button.lock(|button| {
-            rprintln!("button pressed");
-            button.clear_interrupt();
-        })
+    fn onButtonInterrupt(mut cx: onButtonInterrupt::Context) {
+        cx.resources.button.lock(|button| button.clear_interrupt());
+        debounce::spawn_after(Milliseconds(30_u32)).ok();
+    }
+
+    #[task(resources = [button])]
+    fn debounce(cx: debounce::Context){
+
     }
 }
