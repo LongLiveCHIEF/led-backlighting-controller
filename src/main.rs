@@ -6,11 +6,12 @@ use panic_rtt_target as _;
 
 #[rtic::app(device = hal::pac, peripherals = true, dispatchers = [TCC0])]
 mod app {
+    use core::convert::TryInto;
     use hal::clock::{ClockGenId, ClockSource, GenericClockController};
     use hal::rtc::{Count32Mode, Rtc};
     use hal::time::MegaHertz;
     use hal::spi_master;
-    use hal::gpio::{ Input, Floating, Pin, Pb8, Pa5, Pa6, Pa7, PfD, PfA};
+    use hal::gpio::{ Input, Floating, Pin, Pb8, Pa5, Pa6, Pa7, Pa9, PfD, PfA};
     use hal::eic::{pin::{Sense, ExtInt8}, EIC};
     use hal::sercom::{Sercom0Pad1, Sercom0Pad2, Sercom0Pad3};
     use hal::prelude::*;
@@ -29,6 +30,7 @@ mod app {
     struct Resources {
         ledString: ws2812<hal::sercom::SPIMaster0<Sercom0Pad1<Pa5<PfD>>, Sercom0Pad2<Pa6<PfD>>, Sercom0Pad3<Pa7<PfD>>>>,
         button: ExtInt8<Pb8<PfA>>,
+        modeDetectPin: Pa9<Input<Floating>>,
     }
 
     #[init()]
@@ -71,12 +73,13 @@ mod app {
         button.sense(&mut eic, Sense::BOTH);
         button.enable_interrupt(&mut eic);
 
+        let modeDetectPin = pins.a5.into_floating_input(&mut pins.port);
+
         rtt_init_print!();
         rprintln!("Initialization complete!");
         set_solid_color::spawn().unwrap();
 
-        ( init::LateResources { ledString, button }, init::Monotonics(rtc))
-    }
+        ( init::LateResources { ledString, button, modeDetectPin }, init::Monotonics(rtc)) }
 
       // Optional idle task, if left out idle will be a WFI.
     #[idle]
@@ -109,11 +112,37 @@ mod app {
     #[task(binds = EIC, resources=[button], priority = 2)]
     fn onButtonInterrupt(mut cx: onButtonInterrupt::Context) {
         cx.resources.button.lock(|button| button.clear_interrupt());
+        rprintln!("interrupt!");
         debounce::spawn_after(Milliseconds(30_u32)).ok();
     }
 
-    #[task(resources = [button])]
-    fn debounce(cx: debounce::Context){
+    #[task(resources = [modeDetectPin])]
+    fn debounce(mut cx: debounce::Context){
+        static mut HOLD: Option<hold::SpawnHandle> = None;
+        static mut PRESSED_AT: Option<Instant<RtcMonotonic>> = None;
+        if let Some(handle) = HOLD.take() {
+            handle.cancel().ok();
+        }
 
+        if cx.resources.modeDetectPin.lock(|b| b.is_high().unwrap()) {
+            PRESSED_AT.replace(monotonics::RtcMonotonic::now());
+            *HOLD = hold::spawn_after(Milliseconds(1000u32)).ok();
+        } else {
+            if PRESSED_AT
+                .take()
+                .and_then(|i| monotonics::RtcMonotonic::now().checked_duration_since(&i))
+                .and_then(|d| d.try_into().ok())
+                .map(|t: Milliseconds<u32>| t < Milliseconds(1000_u32))
+                .unwrap_or(false) {
+                    rprintln!("short press");
+                }
+        }
+    }
+
+    #[task(resources = [modeDetectPin])]
+    fn hold(mut cx: hold::Context){
+        if cx.resources.modeDetectPin.lock(|b| b.is_high().unwrap()) {
+            rprintln!("long press");
+        }
     }
 }
