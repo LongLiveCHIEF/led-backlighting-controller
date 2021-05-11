@@ -12,7 +12,7 @@ cortex-m = "0.7.2"
 cortex-m-rt = "0.6.13"
 rtic-monotonic = "0.1.0-alpha.0"
 atsamd-hal = { version = "0.12.0", features = ["samd21g", "rtic", "unproven"] }
-xiao_m0 = "0.9.0"
+xiao_m0 = {version = "0.9.0", features = ["unproven"]}
 panic-halt = "0.2.0"
 smart-leds = "0.3.0"
 ws2812-spi = {version ="0.4.0", features = ["mosi_idle_high"]}
