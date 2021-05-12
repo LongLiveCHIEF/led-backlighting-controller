@@ -11,7 +11,7 @@ mod app {
     use hal::rtc::{Count32Mode, Rtc};
     use hal::time::MegaHertz;
     use hal::spi_master;
-    use hal::gpio::{ Input, Floating Pb8, Pa5, Pa6, Pa7, Pa8, PfD, PfA};
+    use hal::gpio::{ Input, Floating, Pb8, Pa5, Pa6, Pa7, Pa11, PfD, PfA};
     use hal::eic::{pin::{Sense, ExtInt8}, EIC};
     use hal::sercom::{Sercom0Pad1, Sercom0Pad2, Sercom0Pad3};
     use hal::prelude::*;
@@ -30,7 +30,7 @@ mod app {
     struct Resources {
         ledString: ws2812<hal::sercom::SPIMaster0<Sercom0Pad1<Pa5<PfD>>, Sercom0Pad2<Pa6<PfD>>, Sercom0Pad3<Pa7<PfD>>>>,
         button: ExtInt8<Pb8<PfA>>,
-        modeDetectPin: Pa8<Input<Floating>>,
+        modeDetectPin: Pa11<Input<Floating>>,
     }
 
     #[init()]
@@ -73,7 +73,7 @@ mod app {
         button.sense(&mut eic, Sense::BOTH);
         button.enable_interrupt(&mut eic);
 
-        let modeDetectPin = pins.a4.into_floating_input(&mut pins.port);
+        let modeDetectPin = pins.a3.into_floating_input(&mut pins.port);
 
         rtt_init_print!();
         rprintln!("Initialization complete!");
