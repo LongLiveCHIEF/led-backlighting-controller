@@ -55,7 +55,7 @@ mod app {
         // setup led control SPI
         let spi = spi_master(
             &mut clocks,
-            MegaHertz(3),
+            2600.khz(),
             peripherals.SERCOM0,
             &mut peripherals.PM,
             pins.a8,
