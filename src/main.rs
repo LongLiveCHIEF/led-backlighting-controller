@@ -75,9 +75,9 @@ mod app {
 
         let modeDetectPin = pins.a3.into_floating_input(&mut pins.port);
 
+        writeLeds::spawn(COLOR).unwrap();
         rtt_init_print!();
         rprintln!("Initialization complete!");
-        set_solid_color::spawn().unwrap();
 
         ( init::LateResources { ledString, button, modeDetectPin }, init::Monotonics(rtc)) }
 
@@ -90,23 +90,6 @@ mod app {
             // Do some work or WFI.
             continue;
         }
-    }
-
-    #[task(resources = [ledString])]
-    fn set_solid_color(mut cx: set_solid_color::Context) {
-        cx.resources.ledString.lock(|ledString| {
-            let leds: [RGB8; NUM_LEDS] = [COLOR; NUM_LEDS];
-            ledString.write(brightness(leds.iter().cloned(), 32)).unwrap();
-        });
-        rprintln!("leds set to {}", COLOR);
-    }
-
-    #[task(resources = [ledString])]
-    fn clear_leds(mut cx: clear_leds::Context) {
-        cx.resources.ledString.lock(|ledString| {
-            ledString.write([RGB8::default(); NUM_LEDS].iter().cloned()).unwrap();
-        });
-        rprintln!("leds cleared");
     }
 
     #[task(binds = EIC, resources=[button], priority = 2)]
