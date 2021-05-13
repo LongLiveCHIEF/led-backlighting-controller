@@ -133,7 +133,8 @@ mod app {
                 .and_then(|d| d.try_into().ok())
                 .map(|t: Milliseconds<u32>| t < Milliseconds(1000_u32))
                 .unwrap_or(false) {
-                    rprintln!("short press");
+                    rprintln!("writing value change");
+                    writeLeds::spawn(RGB8::default()).unwrap();
                 }
         }
     }
@@ -143,5 +144,11 @@ mod app {
         if cx.resources.modeDetectPin.lock(|b| b.is_high().unwrap()) {
             rprintln!("long press");
         }
+    }
+
+    #[task(resources = [ledString])]
+    fn writeLeds(mut cx: writeLeds::Context, data: smart_leds::RGB<u8>){
+        let pattern = [data; NUM_LEDS];
+        cx.resources.ledString.lock(|leds| leds.write(pattern.iter().cloned())).unwrap();
     }
 }
