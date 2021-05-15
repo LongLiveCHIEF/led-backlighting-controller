@@ -116,7 +116,7 @@ mod app {
                 .and_then(|d| d.try_into().ok())
                 .map(|t: Milliseconds<u32>| t < Milliseconds(1000_u32))
                 .unwrap_or(false) {
-                    rprintln!("writing value change");
+                    rprintln!("changing mode value");
                     writeLeds::spawn(RGB8::default()).unwrap();
                 }
         }
@@ -125,7 +125,7 @@ mod app {
     #[task(resources = [modeDetectPin])]
     fn hold(mut cx: hold::Context){
         if cx.resources.modeDetectPin.lock(|b| b.is_high().unwrap()) {
-            rprintln!("long press");
+            rprintln!("selecting mode");
         }
     }
 
