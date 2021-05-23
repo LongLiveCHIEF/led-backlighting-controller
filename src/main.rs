@@ -15,11 +15,11 @@ mod app {
     use hal::eic::{pin::{Sense, ExtInt8}, EIC};
     use hal::sercom::{Sercom0Pad1, Sercom0Pad2, Sercom0Pad3};
     use hal::prelude::*;
-    use rtic_monotonic::Extensions;
+    use heapless::Vec;
     use rtic::time::{duration::Milliseconds, Instant};
     use rtt_target::{rprintln, rtt_init_print};
     use ws2812_spi::Ws2812 as ws2812;
-    use smart_leds::{brightness, RGB8, SmartLedsWrite, colors::RED as COLOR};
+    use smart_leds::{brightness, RGB8, SmartLedsWrite, colors::{RED, GREEN, BLUE}};
 
     const NUM_LEDS: usize = 20;
 
@@ -31,9 +31,10 @@ mod app {
         ledString: ws2812<hal::sercom::SPIMaster0<Sercom0Pad1<Pa5<PfD>>, Sercom0Pad2<Pa6<PfD>>, Sercom0Pad3<Pa7<PfD>>>>,
         button: ExtInt8<Pb8<PfA>>,
         modeDetectPin: Pa11<Input<Floating>>,
+        colors: core::iter::Cycle<<heapless::Vec<smart_leds::RGB<u8>, 3_usize> as IntoIterator>::IntoIter>,
     }
 
-    #[init()]
+    #[init]
     fn init(cx: init::Context) -> (init::LateResources, init::Monotonics) {
         let mut peripherals = cx.device;
         let mut pins = hal::Pins::new(peripherals.PORT);
@@ -75,11 +76,16 @@ mod app {
 
         let modeDetectPin = pins.a3.into_floating_input(&mut pins.port);
 
-        writeLeds::spawn(COLOR).unwrap();
+        let mut colorCollection: Vec<smart_leds::RGB8, 3> = Vec::new();
+        colorCollection.push(RED);
+        colorCollection.push(GREEN);
+        colorCollection.push(BLUE);
+        let mut colors = colorCollection.into_iter().cycle();
+        writeLeds::spawn().unwrap();
         rtt_init_print!();
         rprintln!("Initialization complete!");
 
-        ( init::LateResources { ledString, button, modeDetectPin }, init::Monotonics(rtc)) }
+        ( init::LateResources { ledString, button, modeDetectPin, colors }, init::Monotonics(rtc)) }
 
       // Optional idle task, if left out idle will be a WFI.
     #[idle]
@@ -117,7 +123,7 @@ mod app {
                 .map(|t: Milliseconds<u32>| t < Milliseconds(1000_u32))
                 .unwrap_or(false) {
                     rprintln!("changing mode value");
-                    writeLeds::spawn(RGB8::default()).unwrap();
+                    writeLeds::spawn().unwrap();
                 }
         }
     }
@@ -129,9 +135,11 @@ mod app {
         }
     }
 
-    #[task(resources = [ledString])]
-    fn writeLeds(mut cx: writeLeds::Context, data: smart_leds::RGB<u8>){
-        let pattern = [data; NUM_LEDS];
-        cx.resources.ledString.lock(|leds| leds.write(pattern.iter().cloned())).unwrap();
+    #[task(resources = [ledString, colors])]
+    fn writeLeds(mut cx: writeLeds::Context){
+        let writeLeds::Resources {ledString, colors } = cx.resources;
+        (ledString, colors).lock(|leds, colors| {
+            leds.write(colors.next().iter().cloned()).unwrap()
+        });
     }
 }
