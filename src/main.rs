@@ -9,7 +9,6 @@ mod app {
     use core::convert::TryInto;
     use hal::clock::{ClockGenId, ClockSource, GenericClockController};
     use hal::rtc::{Count32Mode, Rtc};
-    use hal::time::MegaHertz;
     use hal::spi_master;
     use hal::gpio::{ Input, Floating, Pb8, Pa5, Pa6, Pa7, Pa11, PfD, PfA};
     use hal::eic::{pin::{Sense, ExtInt8}, EIC};
@@ -19,9 +18,7 @@ mod app {
     use rtic::time::{duration::Milliseconds, Instant};
     use rtt_target::{rprintln, rtt_init_print};
     use ws2812_spi::Ws2812 as ws2812;
-    use smart_leds::{brightness, RGB8, SmartLedsWrite, colors::{RED, GREEN, BLUE}};
-
-    const NUM_LEDS: usize = 20;
+    use smart_leds::{SmartLedsWrite, colors::{RED, GREEN, BLUE}};
 
     #[monotonic(binds = RTC, default = true)]
     type RtcMonotonic = Rtc<Count32Mode>;
@@ -77,10 +74,10 @@ mod app {
         let modeDetectPin = pins.a3.into_floating_input(&mut pins.port);
 
         let mut colorCollection: Vec<smart_leds::RGB8, 3> = Vec::new();
-        colorCollection.push(RED);
-        colorCollection.push(GREEN);
-        colorCollection.push(BLUE);
-        let mut colors = colorCollection.into_iter().cycle();
+        colorCollection.push(RED).unwrap();
+        colorCollection.push(GREEN).unwrap();
+        colorCollection.push(BLUE).unwrap();
+        let colors = colorCollection.into_iter().cycle();
         writeLeds::spawn().unwrap();
         rtt_init_print!();
         rprintln!("Initialization complete!");
@@ -136,7 +133,7 @@ mod app {
     }
 
     #[task(resources = [ledString, colors])]
-    fn writeLeds(mut cx: writeLeds::Context){
+    fn writeLeds(cx: writeLeds::Context){
         let writeLeds::Resources {ledString, colors } = cx.resources;
         (ledString, colors).lock(|leds, colors| {
             leds.write(colors.next().iter().cloned()).unwrap()
