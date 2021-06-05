@@ -76,9 +76,9 @@ mod app {
         let modeDetectPin = pins.a3.into_floating_input(&mut pins.port);
 
         let mut colorCollection: Vec<[smart_leds::RGB8; NUM_LEDS], 3> = Vec::new();
-        let mut red: [RGB8; NUM_LEDS] = [RED; NUM_LEDS];
-        let mut green: [RGB8; NUM_LEDS] = [GREEN; NUM_LEDS];
-        let mut blue: [RGB8; NUM_LEDS] = [BLUE; NUM_LEDS];
+        let red: [RGB8; NUM_LEDS] = [RED; NUM_LEDS];
+        let green: [RGB8; NUM_LEDS] = [GREEN; NUM_LEDS];
+        let blue: [RGB8; NUM_LEDS] = [BLUE; NUM_LEDS];
         colorCollection.push(red).unwrap();
         colorCollection.push(green).unwrap();
         colorCollection.push(blue).unwrap();
@@ -138,7 +138,7 @@ mod app {
     }
 
     #[task(resources = [ledString, colors])]
-    fn writeLeds(mut cx: writeLeds::Context){
+    fn writeLeds(cx: writeLeds::Context){
         let writeLeds::Resources {ledString, colors } = cx.resources;
         (ledString, colors).lock(|leds, colors| {
             let newColor: Option<[RGB8; 20]> = colors.next();
