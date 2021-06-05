@@ -18,7 +18,8 @@ mod app {
     use rtic::time::{duration::Milliseconds, Instant};
     use rtt_target::{rprintln, rtt_init_print};
     use ws2812_spi::Ws2812 as ws2812;
-    use smart_leds::{SmartLedsWrite, colors::{RED, GREEN, BLUE}};
+    use smart_leds::{RGB8, SmartLedsWrite, colors::{RED, GREEN, BLUE}};
+
 
     #[monotonic(binds = RTC, default = true)]
     type RtcMonotonic = Rtc<Count32Mode>;
@@ -28,11 +29,12 @@ mod app {
         ledString: ws2812<hal::sercom::SPIMaster0<Sercom0Pad1<Pa5<PfD>>, Sercom0Pad2<Pa6<PfD>>, Sercom0Pad3<Pa7<PfD>>>>,
         button: ExtInt8<Pb8<PfA>>,
         modeDetectPin: Pa11<Input<Floating>>,
-        colors: core::iter::Cycle<<heapless::Vec<smart_leds::RGB<u8>, 3_usize> as IntoIterator>::IntoIter>,
+        colors: core::iter::Cycle<<heapless::Vec<[smart_leds::RGB<u8>; 20], 3_usize> as IntoIterator>::IntoIter>,
     }
 
     #[init]
     fn init(cx: init::Context) -> (init::LateResources, init::Monotonics) {
+        const NUM_LEDS: usize = 20;
         let mut peripherals = cx.device;
         let mut pins = hal::Pins::new(peripherals.PORT);
         let mut clocks = GenericClockController::with_external_32kosc(
@@ -73,10 +75,13 @@ mod app {
 
         let modeDetectPin = pins.a3.into_floating_input(&mut pins.port);
 
-        let mut colorCollection: Vec<smart_leds::RGB8, 3> = Vec::new();
-        colorCollection.push(RED).unwrap();
-        colorCollection.push(GREEN).unwrap();
-        colorCollection.push(BLUE).unwrap();
+        let mut colorCollection: Vec<[smart_leds::RGB8; NUM_LEDS], 3> = Vec::new();
+        let mut red: [RGB8; NUM_LEDS] = [RED; NUM_LEDS];
+        let mut green: [RGB8; NUM_LEDS] = [GREEN; NUM_LEDS];
+        let mut blue: [RGB8; NUM_LEDS] = [BLUE; NUM_LEDS];
+        colorCollection.push(red).unwrap();
+        colorCollection.push(green).unwrap();
+        colorCollection.push(blue).unwrap();
         let colors = colorCollection.into_iter().cycle();
         writeLeds::spawn().unwrap();
         rtt_init_print!();
@@ -133,10 +138,13 @@ mod app {
     }
 
     #[task(resources = [ledString, colors])]
-    fn writeLeds(cx: writeLeds::Context){
+    fn writeLeds(mut cx: writeLeds::Context){
         let writeLeds::Resources {ledString, colors } = cx.resources;
         (ledString, colors).lock(|leds, colors| {
-            leds.write(colors.next().iter().cloned()).unwrap()
+            let newColor: Option<[RGB8; 20]> = colors.next();
+            if let Some(i) = newColor {
+                leds.write(i.iter().cloned()).unwrap();
+            }
         });
     }
 }
