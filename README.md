@@ -7,6 +7,10 @@ to cycle through the available solid color lighting choices.
 
 Future updates for this project will support a potentiometer for dimming, and various animation modes.
 
+## Video Demo
+
+[![YouTube Demo](https://img.youtube.com/vi/AdlcyJdxIKM/0.jpg)](https://youtu.be/AdlcyJdxIKM)
+
 ## Electrical Schematic
 
 ![schematic](schematic.svg)
