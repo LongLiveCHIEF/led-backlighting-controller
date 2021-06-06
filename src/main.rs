@@ -18,7 +18,7 @@ mod app {
     use rtic::time::{duration::Milliseconds, Instant};
     use rtt_target::{rprintln, rtt_init_print};
     use ws2812_spi::Ws2812 as ws2812;
-    use smart_leds::{RGB8, SmartLedsWrite, colors::{RED, GREEN, BLUE}};
+    use smart_leds::{brightness, RGB8, SmartLedsWrite, colors::{WHITE, RED, GREEN, BLUE}};
 
 
     #[monotonic(binds = RTC, default = true)]
@@ -29,7 +29,7 @@ mod app {
         ledString: ws2812<hal::sercom::SPIMaster0<Sercom0Pad1<Pa5<PfD>>, Sercom0Pad2<Pa6<PfD>>, Sercom0Pad3<Pa7<PfD>>>>,
         button: ExtInt8<Pb8<PfA>>,
         modeDetectPin: Pa11<Input<Floating>>,
-        colors: core::iter::Cycle<<heapless::Vec<[smart_leds::RGB<u8>; 20], 3_usize> as IntoIterator>::IntoIter>,
+        colors: core::iter::Cycle<<heapless::Vec<[smart_leds::RGB<u8>; 20], 4_usize> as IntoIterator>::IntoIter>,
     }
 
     #[init]
@@ -75,13 +75,15 @@ mod app {
 
         let modeDetectPin = pins.a3.into_floating_input(&mut pins.port);
 
-        let mut colorCollection: Vec<[smart_leds::RGB8; NUM_LEDS], 3> = Vec::new();
+        let mut colorCollection: Vec<[smart_leds::RGB8; NUM_LEDS], 4> = Vec::new();
         let red: [RGB8; NUM_LEDS] = [RED; NUM_LEDS];
         let green: [RGB8; NUM_LEDS] = [GREEN; NUM_LEDS];
         let blue: [RGB8; NUM_LEDS] = [BLUE; NUM_LEDS];
+        let white: [RGB8; NUM_LEDS] = [WHITE; NUM_LEDS];
         colorCollection.push(red).unwrap();
         colorCollection.push(green).unwrap();
         colorCollection.push(blue).unwrap();
+        colorCollection.push(white).unwrap();
         let colors = colorCollection.into_iter().cycle();
         writeLeds::spawn().unwrap();
         rtt_init_print!();
@@ -143,7 +145,7 @@ mod app {
         (ledString, colors).lock(|leds, colors| {
             let newColor: Option<[RGB8; 20]> = colors.next();
             if let Some(i) = newColor {
-                leds.write(i.iter().cloned()).unwrap();
+                leds.write(brightness(i.iter().cloned(), 25)).unwrap();
             }
         });
     }

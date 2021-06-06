@@ -14,3 +14,13 @@ Future updates for this project will support a potentiometer for dimming, and va
 ## Electrical Schematic
 
 ![schematic](schematic.svg)
+
+## Power Usage
+Power values below from ws2812 strip of 20 led's
+
+| Color | mA @ max brightness | mA @ 50% brightness | mA @ 10% brightness |
+| ----- | ------------------- | ------------------- | ------------------- |
+| WHITE | 14.30 | 7.26 | 2.05 |
+| RED | 5.28 | 3.13 | 1.74 |
+| GREEN | 3.11 | 2.25 | 1.65 |
+| BLUE | 5.26 | 3.15 | 1.73 |
