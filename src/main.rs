@@ -146,10 +146,12 @@ mod app {
         }
     }
 
-    #[task(resources = [ledString, colors])]
-    fn writeLeds(cx: writeLeds::Context){
-        let writeLeds::Resources {ledString, colors } = cx.resources;
-        (ledString, colors).lock(|leds, colors| {
+    #[task(resources = [ledString, colors, adc, controlKnob])]
+    fn writeLeds(mut cx: writeLeds::Context){
+        let writeLeds::Resources {ledString, colors, adc, controlKnob } = cx.resources;
+        (ledString, colors, adc, controlKnob).lock(|leds, colors, adc, controlKnob| {
+            let data: u16 = adc.read(&mut controlKnob).unwrap();
+            rprintln!("brightness value: {}", data);
             let newColor: Option<[RGB8; 20]> = colors.next();
             if let Some(i) = newColor {
                 leds.write(brightness(i.iter().cloned(), 25)).unwrap();
