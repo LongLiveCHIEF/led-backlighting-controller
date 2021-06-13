@@ -11,7 +11,7 @@ mod app {
     use hal::clock::{ClockGenId, ClockSource, GenericClockController};
     use hal::rtc::{Count32Mode, Rtc};
     use hal::spi_master;
-    use hal::gpio::{ Input, Floating, Pb8, Pa5, Pa6, Pa7, Pa10, Pa11, PfD, PfA};
+    use hal::gpio::{ Input, Floating, Pb8, Pa5, Pa6, Pa7, Pa10, Pa11, PfD, PfA, PfB};
     use hal::eic::{pin::{Sense, ExtInt8}, EIC};
     use hal::sercom::{Sercom0Pad1, Sercom0Pad2, Sercom0Pad3};
     use hal::prelude::*;
@@ -79,8 +79,8 @@ mod app {
         let modeDetectPin = pins.a3.into_floating_input(&mut pins.port);
 
         // initialize brightness control knob
-        let mut adc = Adc::adc(peripherals.ADC, &mut peripherals.PM, &mut clocks);
-        let mut controlKnob = pins.a2.into();
+        let adc = Adc::adc(peripherals.ADC, &mut peripherals.PM, &mut clocks);
+        let controlKnob = pins.a2.into();
 
         let mut colorCollection: Vec<[smart_leds::RGB8; NUM_LEDS], 4> = Vec::new();
         let red: [RGB8; NUM_LEDS] = [RED; NUM_LEDS];
@@ -147,10 +147,10 @@ mod app {
     }
 
     #[task(resources = [ledString, colors, adc, controlKnob])]
-    fn writeLeds(mut cx: writeLeds::Context){
+    fn writeLeds(cx: writeLeds::Context){
         let writeLeds::Resources {ledString, colors, adc, controlKnob } = cx.resources;
         (ledString, colors, adc, controlKnob).lock(|leds, colors, adc, controlKnob| {
-            let data: u16 = adc.read(&mut controlKnob).unwrap();
+            let data: u16 = adc.read(controlKnob).unwrap();
             rprintln!("brightness value: {}", data);
             let newColor: Option<[RGB8; 20]> = colors.next();
             if let Some(i) = newColor {

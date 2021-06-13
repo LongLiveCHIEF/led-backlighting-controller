@@ -45,6 +45,7 @@ dependencies = [
  "num-traits",
  "paste",
  "rand_core",
+ "replace_with",
  "rtic-monotonic",
  "seq-macro",
  "typenum",
@@ -481,6 +482,12 @@ name = "rand_core"
 version = "0.5.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "90bde5296fc891b0cef12a6d03ddccc162ce7b2aff54160af9338f8d40df6d19"
+
+[[package]]
+name = "replace_with"
+version = "0.1.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e3a8614ee435691de62bcffcf4a66d91b3594bf1428a5722e79103249a095690"
 
 [[package]]
 name = "rgb"
