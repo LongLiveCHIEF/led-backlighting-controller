@@ -151,10 +151,11 @@ mod app {
         let writeLeds::Resources {ledString, colors, adc, controlKnob } = cx.resources;
         (ledString, colors, adc, controlKnob).lock(|leds, colors, adc, controlKnob| {
             let data: u16 = adc.read(controlKnob).unwrap();
+            let data: u8 = ( data >> 4) as u8;
             rprintln!("brightness value: {}", data);
             let newColor: Option<[RGB8; 20]> = colors.next();
             if let Some(i) = newColor {
-                leds.write(brightness(i.iter().cloned(), 25)).unwrap();
+                leds.write(brightness(i.iter().cloned(), data)).unwrap();
             }
         });
     }
