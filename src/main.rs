@@ -32,7 +32,7 @@ mod app {
         modeDetectPin: Pa11<Input<Floating>>,
         colors: core::iter::Cycle<<heapless::Vec<[smart_leds::RGB<u8>; 20], 4_usize> as IntoIterator>::IntoIter>,
         adc: atsamd_hal::adc::Adc<hal::pac::ADC>,
-        controlKnob: Pa10<Input<Floating>>,
+        controlKnob: Pa10<PfB>,
     }
 
     #[init]
@@ -80,7 +80,7 @@ mod app {
 
         // initialize brightness control knob
         let adc = Adc::adc(peripherals.ADC, &mut peripherals.PM, &mut clocks);
-        let controlKnob = pins.a2.into();
+        let controlKnob = pins.a2.into_function_b(&mut pins.port);
 
         let mut colorCollection: Vec<[smart_leds::RGB8; NUM_LEDS], 4> = Vec::new();
         let red: [RGB8; NUM_LEDS] = [RED; NUM_LEDS];
