@@ -47,7 +47,7 @@ F 2 "Capacitor_Tantalum_SMD:CP_EIA-3528-12_Kemet-T" H 3050 1900 50  0001 C CNN
 F 3 "~" H 3050 1900 50  0001 C CNN
 F 4 "C8020" H 3050 1900 50  0001 C CNN "LCSC Part"
 	1    3050 1900
-	1    0    0    -1  
+	-1   0    0    1   
 $EndComp
 $Comp
 L Device:C_Small C2
@@ -115,7 +115,7 @@ U 1 1 60E2C3D9
 P 5900 4800
 F 0 "U2" H 5875 3861 50  0000 C CNN
 F 1 "SeeeduinoXIAO" H 5875 3770 50  0000 C CNN
-F 2 "" H 5550 5000 50  0001 C CNN
+F 2 "Seeeduino XIAO KICAD:Seeeduino XIAO-MOUDLE14P-2.54-21X17.8MM" H 5550 5000 50  0001 C CNN
 F 3 "" H 5550 5000 50  0001 C CNN
 F 4 "0" H 5900 4800 50  0001 C CNN "JLCPCB BOM"
 	1    5900 4800
@@ -190,10 +190,6 @@ Wire Wire Line
 Connection ~ 3050 3150
 Wire Wire Line
 	3050 3150 3500 3150
-Connection ~ 3500 3150
-Wire Wire Line
-	3500 3150 3900 3150
-Connection ~ 3900 3150
 Wire Wire Line
 	3900 3150 4250 3150
 Connection ~ 4250 3150
@@ -285,4 +281,8 @@ Wire Wire Line
 	6000 2900 7600 2900
 Wire Wire Line
 	6700 4500 6850 4500
+Text Label 4000 2250 0    50   ~ 0
++5V
+Text Label 3200 2250 0    50   ~ 0
++3V
 $EndSCHEMATC

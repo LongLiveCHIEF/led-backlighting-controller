@@ -40,18 +40,18 @@ $EndComp
 $Comp
 L Switch:SW_MEC_5E SW1
 U 1 1 60E66D50
-P 5450 4100
-F 0 "SW1" V 5450 4485 50  0000 C CNN
-F 1 "SW_MEC_5E" V 5450 3900 50  0000 C CNN
-F 2 "Button_Switch_THT:SW_PUSH-12mm" H 5450 4400 50  0001 C CNN
-F 3 "http://www.apem.com/int/index.php?controller=attachment&id_attachment=1371" H 5450 4400 50  0001 C CNN
-F 4 "0" H 5450 4100 50  0001 C CNN "JLCPCB BOM"
-	1    5450 4100
+P 5450 3900
+F 0 "SW1" V 5450 4285 50  0000 C CNN
+F 1 "SW_MEC_5E" V 5450 3700 50  0000 C CNN
+F 2 "Button_Switch_THT:SW_PUSH-12mm" H 5450 4200 50  0001 C CNN
+F 3 "http://www.apem.com/int/index.php?controller=attachment&id_attachment=1371" H 5450 4200 50  0001 C CNN
+F 4 "0" H 5450 3900 50  0001 C CNN "JLCPCB BOM"
+	1    5450 3900
 	0    -1   -1   0   
 $EndComp
 Text HLabel 5200 2950 0    50   Output ~ 0
 mode_ref
-Text HLabel 5350 4550 3    50   Output ~ 0
+Text HLabel 5350 4350 3    50   Output ~ 0
 mode_btn
 Wire Wire Line
 	6450 3250 5900 3250
@@ -107,18 +107,15 @@ Wire Wire Line
 	5350 3550 5350 3100
 Connection ~ 5900 3550
 Wire Wire Line
-	5350 3900 5450 3900
+	5350 3700 5450 3700
+Connection ~ 5350 3700
 Wire Wire Line
-	5350 3550 5350 3900
-Connection ~ 5350 3550
-Connection ~ 5350 3900
+	5350 3700 5350 4100
 Wire Wire Line
-	5350 3900 5350 4300
+	5350 4100 5450 4100
+Connection ~ 5350 4100
 Wire Wire Line
-	5350 4300 5450 4300
-Connection ~ 5350 4300
-Wire Wire Line
-	5350 4300 5350 4550
+	5350 4100 5350 4350
 $Comp
 L power:GND #PWR06
 U 1 1 60E7C402
@@ -130,8 +127,6 @@ F 3 "" H 5350 2800 50  0001 C CNN
 	1    5350 2800
 	-1   0    0    1   
 $EndComp
-Wire Wire Line
-	6950 3550 7550 3550
 $Comp
 L Device:C_Small C6
 U 1 1 60E66209
@@ -144,4 +139,9 @@ F 4 "C15850" H 6950 3350 50  0001 C CNN "LCSC Part"
 	1    6950 3350
 	1    0    0    -1  
 $EndComp
+Wire Wire Line
+	6950 3550 7550 3550
+Wire Wire Line
+	5350 3700 5350 3550
+Connection ~ 5350 3550
 $EndSCHEMATC
