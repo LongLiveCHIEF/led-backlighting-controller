@@ -1,0 +1,80 @@
+EESchema Schematic File Version 4
+EELAYER 30 0
+EELAYER END
+$Descr A4 11693 8268
+encoding utf-8
+Sheet 1 3
+Title ""
+Date ""
+Rev ""
+Comp ""
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+$Sheet
+S 1500 3300 1750 900 
+U 60E20EF1
+F0 "mcu_board" 50
+F1 "mcu_board.sch" 50
+F2 "mode_btn" I R 3250 3600 50 
+F3 "mode_ref" I R 3250 3900 50 
+$EndSheet
+$Sheet
+S 4450 3350 1950 850 
+U 60E20F47
+F0 "power_and_control_board" 50
+F1 "power_and_control_board.sch" 50
+F2 "mode_ref" O L 4450 3900 50 
+F3 "mode_btn" O L 4450 3600 50 
+$EndSheet
+$Comp
+L power:+5V #PWR04
+U 1 1 60E53D07
+P 10050 3500
+F 0 "#PWR04" H 10050 3350 50  0001 C CNN
+F 1 "+5V" V 10065 3628 50  0000 L CNN
+F 2 "" H 10050 3500 50  0001 C CNN
+F 3 "" H 10050 3500 50  0001 C CNN
+	1    10050 3500
+	0    1    1    0   
+$EndComp
+$Comp
+L power:GND #PWR05
+U 1 1 60E5421E
+P 10050 3800
+F 0 "#PWR05" H 10050 3550 50  0001 C CNN
+F 1 "GND" V 10055 3672 50  0000 R CNN
+F 2 "" H 10050 3800 50  0001 C CNN
+F 3 "" H 10050 3800 50  0001 C CNN
+	1    10050 3800
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	3250 3600 4450 3600
+Wire Wire Line
+	3250 3900 4450 3900
+$Comp
+L power:PWR_FLAG #FLG0101
+U 1 1 60E80B9C
+P 10050 3500
+F 0 "#FLG0101" H 10050 3575 50  0001 C CNN
+F 1 "PWR_FLAG" H 10050 3673 50  0000 C CNN
+F 2 "" H 10050 3500 50  0001 C CNN
+F 3 "~" H 10050 3500 50  0001 C CNN
+	1    10050 3500
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:PWR_FLAG #FLG0102
+U 1 1 60E80C92
+P 10050 3800
+F 0 "#FLG0102" H 10050 3875 50  0001 C CNN
+F 1 "PWR_FLAG" H 10050 3973 50  0000 C CNN
+F 2 "" H 10050 3800 50  0001 C CNN
+F 3 "~" H 10050 3800 50  0001 C CNN
+	1    10050 3800
+	1    0    0    -1  
+$EndComp
+$EndSCHEMATC
