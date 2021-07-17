@@ -141,7 +141,7 @@ Wire Wire Line
 Wire Wire Line
 	4700 4950 4700 5250
 Wire Wire Line
-	4700 5250 5050 5250
+	4700 5250 4850 5250
 Wire Wire Line
 	5050 4800 4700 4800
 Wire Wire Line
@@ -285,4 +285,29 @@ Text Label 4000 2250 0    50   ~ 0
 +5V
 Text Label 3200 2250 0    50   ~ 0
 +3V
+$Comp
+L Device:R_Small_US R3
+U 1 1 60F32880
+P 4850 5350
+F 0 "R3" H 4918 5396 50  0000 L CNN
+F 1 "2k2" H 4918 5305 50  0000 L CNN
+F 2 "Resistor_SMD:R_0805_2012Metric" H 4850 5350 50  0001 C CNN
+F 3 "~" H 4850 5350 50  0001 C CNN
+	1    4850 5350
+	1    0    0    -1  
+$EndComp
+Connection ~ 4850 5250
+Wire Wire Line
+	4850 5250 5050 5250
+$Comp
+L power:GND #PWR09
+U 1 1 60F32FE4
+P 4850 5450
+F 0 "#PWR09" H 4850 5200 50  0001 C CNN
+F 1 "GND" V 4855 5322 50  0000 R CNN
+F 2 "" H 4850 5450 50  0001 C CNN
+F 3 "" H 4850 5450 50  0001 C CNN
+	1    4850 5450
+	1    0    0    -1  
+$EndComp
 $EndSCHEMATC
