@@ -1,0 +1,7 @@
+Comment,Designator,Footprint,LCSC Part #
+"22uF Polarized capacitor, small US symbol","C1,C5",CP_EIA-3528-12_Kemet-T,C8020
+"10uF Unpolarized capacitor, small symbol","C2,C6",C_0805_2012Metric,C15850
+"330uF Polarized capacitor, small US symbol","C3,C4",CP_EIA-3528-12_Kemet-T,C178370
+"BSS138 50V Vds, 0.22A Id, N-Channel MOSFET, SOT-23",Q1,SOT-23,C52895
+"10k Resistor, small US symbol","R1,R2",R_0805_2012Metric,C17414
+"AMS1117-3.3 1A Low Dropout regulator, positive, 3.3V fixed output, SOT-223","U1,U3",SOT-223-3_TabPin2,C6186
