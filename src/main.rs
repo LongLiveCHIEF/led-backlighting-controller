@@ -19,7 +19,7 @@ mod app {
     use rtic::time::{duration::Milliseconds, Instant};
     use rtt_target::{rprintln, rtt_init_print};
     use ws2812_spi::Ws2812 as ws2812;
-    use smart_leds::{brightness, RGB8, SmartLedsWrite, colors::{WHITE, RED, GREEN, BLUE}};
+    use smart_leds::{brightness, RGB8, SmartLedsWrite, colors::{WHITE, RED, GREEN, BLUE, YELLOW}};
 
 
     #[monotonic(binds = RTC, default = true)]
@@ -30,14 +30,14 @@ mod app {
         ledString: ws2812<hal::sercom::SPIMaster0<Sercom0Pad1<Pa5<PfD>>, Sercom0Pad2<Pa6<PfD>>, Sercom0Pad3<Pa7<PfD>>>>,
         button: ExtInt8<Pb8<PfA>>,
         modeDetectPin: Pa11<Input<Floating>>,
-        colors: core::iter::Cycle<<heapless::Vec<[smart_leds::RGB<u8>; 20], 4_usize> as IntoIterator>::IntoIter>,
+        colors: core::iter::Cycle<<heapless::Vec<[smart_leds::RGB<u8>; 31], 5_usize> as IntoIterator>::IntoIter>,
         adc: atsamd_hal::adc::Adc<hal::pac::ADC>,
         controlKnob: Pa10<PfB>,
     }
 
     #[init]
     fn init(cx: init::Context) -> (init::LateResources, init::Monotonics) {
-        const NUM_LEDS: usize = 20;
+        const NUM_LEDS: usize = 31;
         let mut peripherals = cx.device;
         let mut pins = hal::Pins::new(peripherals.PORT);
         let mut clocks = GenericClockController::with_external_32kosc(
@@ -82,12 +82,14 @@ mod app {
         let adc = Adc::adc(peripherals.ADC, &mut peripherals.PM, &mut clocks);
         let controlKnob = pins.a2.into_function_b(&mut pins.port);
 
-        let mut colorCollection: Vec<[smart_leds::RGB8; NUM_LEDS], 4> = Vec::new();
+        let mut colorCollection: Vec<[smart_leds::RGB8; NUM_LEDS], 5> = Vec::new();
         let red: [RGB8; NUM_LEDS] = [RED; NUM_LEDS];
+        let yellow: [RGB8; NUM_LEDS] = [YELLOW; NUM_LEDS];
         let green: [RGB8; NUM_LEDS] = [GREEN; NUM_LEDS];
         let blue: [RGB8; NUM_LEDS] = [BLUE; NUM_LEDS];
         let white: [RGB8; NUM_LEDS] = [WHITE; NUM_LEDS];
         colorCollection.push(red).unwrap();
+        colorCollection.push(yellow).unwrap();
         colorCollection.push(green).unwrap();
         colorCollection.push(blue).unwrap();
         colorCollection.push(white).unwrap();
@@ -153,7 +155,7 @@ mod app {
             let data: u16 = adc.read(controlKnob).unwrap();
             let data: u8 = ( data >> 4) as u8;
             rprintln!("brightness value: {}", data);
-            let newColor: Option<[RGB8; 20]> = colors.next();
+            let newColor: Option<[RGB8; 31]> = colors.next();
             if let Some(i) = newColor {
                 leds.write(brightness(i.iter().cloned(), data)).unwrap();
             }
