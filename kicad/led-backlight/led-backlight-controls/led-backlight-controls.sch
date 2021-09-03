@@ -1,0 +1,240 @@
+EESchema Schematic File Version 4
+EELAYER 30 0
+EELAYER END
+$Descr A4 11693 8268
+encoding utf-8
+Sheet 1 1
+Title ""
+Date ""
+Rev ""
+Comp ""
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+$Comp
+L Regulator_Linear:AMS1117-3.3 U1
+U 1 1 6101EC1D
+P 4900 3500
+F 0 "U1" H 4900 3649 50  0000 C CNN
+F 1 "AMS1117-3.3" H 4900 3740 50  0000 C CNN
+F 2 "Package_TO_SOT_SMD:SOT-223-3_TabPin2" H 4900 3700 50  0001 C CNN
+F 3 "http://www.advanced-monolithic.com/pdf/ds1117.pdf" H 5000 3250 50  0001 C CNN
+	1    4900 3500
+	-1   0    0    1   
+$EndComp
+$Comp
+L Device:CP1_Small C1
+U 1 1 6101F71D
+P 4300 3400
+F 0 "C1" H 4209 3354 50  0000 R CNN
+F 1 "22uF" H 4209 3445 50  0000 R CNN
+F 2 "Capacitor_Tantalum_SMD:CP_EIA-3528-12_Kemet-T" H 4300 3400 50  0001 C CNN
+F 3 "~" H 4300 3400 50  0001 C CNN
+	1    4300 3400
+	-1   0    0    1   
+$EndComp
+$Comp
+L Device:C_Small C2
+U 1 1 6101FD50
+P 5500 3400
+F 0 "C2" H 5408 3354 50  0000 R CNN
+F 1 "10uF" H 5408 3445 50  0000 R CNN
+F 2 "Capacitor_SMD:C_0805_2012Metric" H 5500 3400 50  0001 C CNN
+F 3 "~" H 5500 3400 50  0001 C CNN
+	1    5500 3400
+	-1   0    0    1   
+$EndComp
+$Comp
+L Device:R_POT_US RV1
+U 1 1 61021A87
+P 4650 2300
+F 0 "RV1" V 4445 2300 50  0000 C CNN
+F 1 "R_POT_US" V 4536 2300 50  0000 C CNN
+F 2 "initeq:jst_xh_conn_1x03_horizontal" H 4650 2300 50  0001 C CNN
+F 3 "~" H 4650 2300 50  0001 C CNN
+	1    4650 2300
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	4900 3200 4300 3200
+Wire Wire Line
+	4300 3200 4300 3300
+Wire Wire Line
+	4600 3500 4300 3500
+Wire Wire Line
+	4900 3200 5500 3200
+Wire Wire Line
+	5500 3200 5500 3300
+Connection ~ 4900 3200
+Wire Wire Line
+	5200 3500 5500 3500
+Connection ~ 3950 3500
+Wire Wire Line
+	4050 3700 3950 3700
+Wire Wire Line
+	3950 3500 3950 3700
+$Comp
+L power:GND #PWR04
+U 1 1 61028508
+P 4900 3200
+F 0 "#PWR04" H 4900 2950 50  0001 C CNN
+F 1 "GND" H 4905 3027 50  0000 C CNN
+F 2 "" H 4900 3200 50  0001 C CNN
+F 3 "" H 4900 3200 50  0001 C CNN
+	1    4900 3200
+	-1   0    0    1   
+$EndComp
+$Comp
+L power:+5V #PWR05
+U 1 1 610295FE
+P 5500 3500
+F 0 "#PWR05" H 5500 3350 50  0001 C CNN
+F 1 "+5V" H 5515 3673 50  0000 C CNN
+F 2 "" H 5500 3500 50  0001 C CNN
+F 3 "" H 5500 3500 50  0001 C CNN
+	1    5500 3500
+	-1   0    0    1   
+$EndComp
+Connection ~ 5500 3500
+$Comp
+L Connector:Conn_01x02_Female J3
+U 1 1 6102B3D8
+P 6500 3350
+F 0 "J3" H 6528 3326 50  0000 L CNN
+F 1 "Conn_01x02_Female" H 6528 3235 50  0000 L CNN
+F 2 "initeq:jst_xh_conn_1x02_horizontal" H 6500 3350 50  0001 C CNN
+F 3 "~" H 6500 3350 50  0001 C CNN
+	1    6500 3350
+	1    0    0    -1  
+$EndComp
+$Comp
+L Connector:Conn_01x04_Female J2
+U 1 1 6102CE9E
+P 2800 3500
+F 0 "J2" H 2692 3075 50  0000 C CNN
+F 1 "Conn_01x04_Female" H 2692 3166 50  0000 C CNN
+F 2 "initeq:jst_xh_conn_1x04_horizontal" H 2800 3500 50  0001 C CNN
+F 3 "~" H 2800 3500 50  0001 C CNN
+	1    2800 3500
+	-1   0    0    1   
+$EndComp
+$Comp
+L power:GND #PWR01
+U 1 1 61032D49
+P 4800 2300
+F 0 "#PWR01" H 4800 2050 50  0001 C CNN
+F 1 "GND" V 4805 2172 50  0000 R CNN
+F 2 "" H 4800 2300 50  0001 C CNN
+F 3 "" H 4800 2300 50  0001 C CNN
+	1    4800 2300
+	0    -1   -1   0   
+$EndComp
+$Comp
+L power:GND #PWR0101
+U 1 1 610334A6
+P 6300 3450
+F 0 "#PWR0101" H 6300 3200 50  0001 C CNN
+F 1 "GND" V 6305 3322 50  0000 R CNN
+F 2 "" H 6300 3450 50  0001 C CNN
+F 3 "" H 6300 3450 50  0001 C CNN
+	1    6300 3450
+	0    1    1    0   
+$EndComp
+$Comp
+L power:+5V #PWR0102
+U 1 1 61033C4B
+P 6300 3350
+F 0 "#PWR0102" H 6300 3200 50  0001 C CNN
+F 1 "+5V" V 6315 3478 50  0000 L CNN
+F 2 "" H 6300 3350 50  0001 C CNN
+F 3 "" H 6300 3350 50  0001 C CNN
+	1    6300 3350
+	0    -1   -1   0   
+$EndComp
+$Comp
+L power:PWR_FLAG #FLG0101
+U 1 1 61034550
+P 6350 3350
+F 0 "#FLG0101" H 6350 3425 50  0001 C CNN
+F 1 "PWR_FLAG" H 6350 3523 50  0000 C CNN
+F 2 "" H 6350 3350 50  0001 C CNN
+F 3 "~" H 6350 3350 50  0001 C CNN
+	1    6350 3350
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:PWR_FLAG #FLG0102
+U 1 1 61034A8A
+P 6350 3450
+F 0 "#FLG0102" H 6350 3525 50  0001 C CNN
+F 1 "PWR_FLAG" H 6350 3623 50  0000 C CNN
+F 2 "" H 6350 3450 50  0001 C CNN
+F 3 "~" H 6350 3450 50  0001 C CNN
+	1    6350 3450
+	-1   0    0    1   
+$EndComp
+Wire Wire Line
+	3950 2750 4500 2750
+Wire Wire Line
+	4500 2750 4500 2300
+Wire Wire Line
+	3950 2750 3950 3500
+Wire Wire Line
+	4650 2450 4650 3100
+Wire Wire Line
+	4650 3100 3400 3100
+Wire Wire Line
+	3400 3100 3400 3300
+Wire Wire Line
+	3400 3300 3000 3300
+Wire Wire Line
+	3400 4100 3400 3400
+Wire Wire Line
+	3400 3400 3000 3400
+$Comp
+L power:+5V #PWR0103
+U 1 1 61040443
+P 3000 3600
+F 0 "#PWR0103" H 3000 3450 50  0001 C CNN
+F 1 "+5V" V 3015 3728 50  0000 L CNN
+F 2 "" H 3000 3600 50  0001 C CNN
+F 3 "" H 3000 3600 50  0001 C CNN
+	1    3000 3600
+	0    1    1    0   
+$EndComp
+$Comp
+L power:GND #PWR0104
+U 1 1 61041191
+P 3000 3500
+F 0 "#PWR0104" H 3000 3250 50  0001 C CNN
+F 1 "GND" V 3005 3372 50  0000 R CNN
+F 2 "" H 3000 3500 50  0001 C CNN
+F 3 "" H 3000 3500 50  0001 C CNN
+	1    3000 3500
+	0    -1   -1   0   
+$EndComp
+Text Label 4050 3500 0    50   ~ 0
+3v3
+Text Label 3500 3100 0    50   ~ 0
+mode_ref
+Text Label 3450 4100 0    50   ~ 0
+mode_btn
+Connection ~ 4300 3500
+Wire Wire Line
+	3950 3500 4300 3500
+Wire Wire Line
+	3400 4100 4050 4100
+$Comp
+L Switch:SW_Push SW1
+U 1 1 6101DAEE
+P 4050 3900
+F 0 "SW1" V 4096 3852 50  0000 R CNN
+F 1 "SW_Push" V 4005 3852 50  0000 R CNN
+F 2 "Button_Switch_THT:SW_PUSH-12mm" H 4050 4100 50  0001 C CNN
+F 3 "~" H 4050 4100 50  0001 C CNN
+	1    4050 3900
+	0    -1   -1   0   
+$EndComp
+$EndSCHEMATC
