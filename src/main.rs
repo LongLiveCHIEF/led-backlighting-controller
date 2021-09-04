@@ -31,7 +31,7 @@ mod app {
         ledString: ws2812<hal::sercom::SPIMaster0<Sercom0Pad1<Pa5<PfD>>, Sercom0Pad2<Pa6<PfD>>, Sercom0Pad3<Pa7<PfD>>>>,
         button: ExtInt8<Pb8<PfA>>,
         modeDetectPin: Pa11<Input<Floating>>,
-        colors: core::iter::Cycle<<heapless::Vec<[smart_leds::RGB<u8>; 35], 5_usize> as IntoIterator>::IntoIter>,
+        colors: core::iter::Cycle<<heapless::Vec<[smart_leds::RGB<u8>; 20], 5_usize> as IntoIterator>::IntoIter>,
         adc: atsamd_hal::adc::Adc<hal::pac::ADC>,
         controlKnob: Pa10<PfB>,
     }
@@ -41,7 +41,7 @@ mod app {
 
     #[init]
     fn init(cx: init::Context) -> (Shared, Local, init::Monotonics) {
-        const NUM_LEDS: usize = 35;
+        const NUM_LEDS: usize = 20;
         let mut peripherals = cx.device;
         let mut pins = hal::Pins::new(peripherals.PORT);
         let mut clocks = GenericClockController::with_external_32kosc(
@@ -166,7 +166,7 @@ mod app {
             let data: u16 = _adc.read(_controlKnob).unwrap();
             let data: u8 = ( data >> 4) as u8;
             rprintln!("brightness value: {}", data);
-            let newColor: Option<[RGB8; 35]> = _colors.next();
+            let newColor: Option<[RGB8; 20]> = _colors.next();
             if let Some(i) = newColor {
                 _ledString.write(brightness(i.iter().cloned(), data)).unwrap();
             }
