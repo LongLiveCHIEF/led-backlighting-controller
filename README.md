@@ -7,6 +7,13 @@ to cycle through the available solid color lighting choices.
 
 Future updates for this project will support a potentiometer for dimming, and various animation modes.
 
+## Build and Flash
+
+```
+cargo build --release
+cargo hf2 --release
+```
+
 ## Video Demo
 
 [![YouTube Demo](https://img.youtube.com/vi/AdlcyJdxIKM/0.jpg)](https://youtu.be/AdlcyJdxIKM)

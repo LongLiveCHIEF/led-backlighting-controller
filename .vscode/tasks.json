@@ -4,15 +4,24 @@
 		{
 			"type": "shell",
 			"command": "cargo",
-      "args": [
-        "embed",
-        "--release"
-      ],
+			"args": [
+				"embed",
+				"--release"
+			],
 			"group": {
-        "kind": "build",
-        "isDefault": true
-      },
+				"kind": "build",
+				"isDefault": true
+			},
 			"label": "Rust: cargo build - led-backlighting-controller"
+		},
+		{
+			"type": "shell",
+			"command": "cargo",
+			"args":[
+				"hf2",
+				"--release"
+			],
+			"label": "Rust: flash chip"
 		}
 	]
 }
