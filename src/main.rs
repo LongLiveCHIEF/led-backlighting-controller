@@ -25,8 +25,8 @@ mod app {
     #[monotonic(binds = RTC, default = true)]
     type RtcMonotonic = Rtc<Count32Mode>;
 
-    #[resources]
-    struct Resources {
+    #[shared]
+    struct Shared {
         ledString: ws2812<hal::sercom::SPIMaster0<Sercom0Pad1<Pa5<PfD>>, Sercom0Pad2<Pa6<PfD>>, Sercom0Pad3<Pa7<PfD>>>>,
         button: ExtInt8<Pb8<PfA>>,
         modeDetectPin: Pa11<Input<Floating>>,
@@ -35,8 +35,11 @@ mod app {
         controlKnob: Pa10<PfB>,
     }
 
+    #[local]
+    struct Local {}
+
     #[init]
-    fn init(cx: init::Context) -> (init::LateResources, init::Monotonics) {
+    fn init(cx: init::Context) -> (Shared, Local, init::Monotonics) {
         const NUM_LEDS: usize = 35;
         let mut peripherals = cx.device;
         let mut pins = hal::Pins::new(peripherals.PORT);
@@ -98,7 +101,7 @@ mod app {
         rtt_init_print!();
         rprintln!("Initialization complete!");
 
-        ( init::LateResources { ledString, button, modeDetectPin, colors, adc, controlKnob }, init::Monotonics(rtc)) }
+        ( Local {}, Shared { ledString, button, modeDetectPin, colors, adc, controlKnob }, init::Monotonics(rtc)) }
 
       // Optional idle task, if left out idle will be a WFI.
     #[idle]
@@ -111,13 +114,13 @@ mod app {
         }
     }
 
-    #[task(binds = EIC, resources=[button], priority = 2)]
+    #[task(binds = EIC, shared=[button], priority = 2)]
     fn onButtonInterrupt(mut cx: onButtonInterrupt::Context) {
-        cx.resources.button.lock(|button| button.clear_interrupt());
+        cx.shared.button.lock(|button| button.clear_interrupt());
         debounce::spawn_after(Milliseconds(30_u32)).ok();
     }
 
-    #[task(resources = [modeDetectPin])]
+    #[task(shared = [modeDetectPin])]
     fn debounce(mut cx: debounce::Context){
         static mut HOLD: Option<hold::SpawnHandle> = None;
         static mut PRESSED_AT: Option<Instant<RtcMonotonic>> = None;
@@ -125,7 +128,7 @@ mod app {
             handle.cancel().ok();
         }
 
-        if cx.resources.modeDetectPin.lock(|b| b.is_high().unwrap()) {
+        if cx.shared.modeDetectPin.lock(|b| b.is_high().unwrap()) {
             PRESSED_AT.replace(monotonics::RtcMonotonic::now());
             *HOLD = hold::spawn_after(Milliseconds(1000u32)).ok();
         } else {
@@ -141,16 +144,16 @@ mod app {
         }
     }
 
-    #[task(resources = [modeDetectPin])]
+    #[task(shared = [modeDetectPin])]
     fn hold(mut cx: hold::Context){
-        if cx.resources.modeDetectPin.lock(|b| b.is_high().unwrap()) {
+        if cx.shared.modeDetectPin.lock(|b| b.is_high().unwrap()) {
             rprintln!("selecting mode");
         }
     }
 
-    #[task(resources = [ledString, colors, adc, controlKnob])]
+    #[task(shared = [ledString, colors, adc, controlKnob])]
     fn writeLeds(cx: writeLeds::Context){
-        let writeLeds::Resources {ledString, colors, adc, controlKnob } = cx.resources;
+        let writeLeds::Shared {ledString, colors, adc, controlKnob } = cx.shared;
         (ledString, colors, adc, controlKnob).lock(|leds, colors, adc, controlKnob| {
             let data: u16 = adc.read(controlKnob).unwrap();
             let data: u8 = ( data >> 4) as u8;
