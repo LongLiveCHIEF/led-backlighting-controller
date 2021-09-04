@@ -1,5 +1,6 @@
 #![no_main]
 #![no_std]
+#![allow(non_snake_case)]
 
 extern crate xiao_m0 as hal;
 use panic_rtt_target as _;
@@ -125,8 +126,8 @@ mod app {
         pressed_at: Option<Instant<RtcMonotonic>> = None
     ])]
     fn debounce(mut cx: debounce::Context){
-        let HOLD: &'static mut Option<hold::SpawnHandle> = cx.local.hold;
-        let PRESSED_AT: &'static mut Option<Instant<RtcMonotonic>> = cx.local.pressed_at;
+        let HOLD = cx.local.hold;
+        let PRESSED_AT = cx.local.pressed_at;
         if let Some(handle) = HOLD.take() {
             handle.cancel().ok();
         }
