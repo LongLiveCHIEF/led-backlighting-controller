@@ -101,7 +101,7 @@ mod app {
         rtt_init_print!();
         rprintln!("Initialization complete!");
 
-        ( Local {}, Shared { ledString, button, modeDetectPin, colors, adc, controlKnob }, init::Monotonics(rtc)) }
+        ( Shared { ledString, button, modeDetectPin, colors, adc, controlKnob }, Local {}, init::Monotonics(rtc)) }
 
       // Optional idle task, if left out idle will be a WFI.
     #[idle]
@@ -153,14 +153,18 @@ mod app {
 
     #[task(shared = [ledString, colors, adc, controlKnob])]
     fn writeLeds(cx: writeLeds::Context){
-        let writeLeds::Shared {ledString, colors, adc, controlKnob } = cx.shared;
-        (ledString, colors, adc, controlKnob).lock(|leds, colors, adc, controlKnob| {
-            let data: u16 = adc.read(controlKnob).unwrap();
+        let _ledString = cx.shared.ledString;
+        let _colors = cx.shared.colors;
+        let _adc = cx.shared.adc;
+        let _controlKnob = cx.shared.controlKnob;
+
+        (_ledString, _colors, _adc, _controlKnob).lock(|_ledString, _colors, _adc, _controlKnob| {
+            let data: u16 = _adc.read(_controlKnob).unwrap();
             let data: u8 = ( data >> 4) as u8;
             rprintln!("brightness value: {}", data);
-            let newColor: Option<[RGB8; 35]> = colors.next();
+            let newColor: Option<[RGB8; 35]> = _colors.next();
             if let Some(i) = newColor {
-                leds.write(brightness(i.iter().cloned(), data)).unwrap();
+                _ledString.write(brightness(i.iter().cloned(), data)).unwrap();
             }
         });
     }
