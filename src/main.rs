@@ -120,10 +120,13 @@ mod app {
         debounce::spawn_after(Milliseconds(30_u32)).ok();
     }
 
-    #[task(shared = [modeDetectPin])]
+    #[task(shared = [modeDetectPin], local = [
+        hold: Option<hold::SpawnHandle> = None,
+        pressed_at: Option<Instant<RtcMonotonic>> = None
+    ])]
     fn debounce(mut cx: debounce::Context){
-        static mut HOLD: Option<hold::SpawnHandle> = None;
-        static mut PRESSED_AT: Option<Instant<RtcMonotonic>> = None;
+        let HOLD: &'static mut Option<hold::SpawnHandle> = cx.local.hold;
+        let PRESSED_AT: &'static mut Option<Instant<RtcMonotonic>> = cx.local.pressed_at;
         if let Some(handle) = HOLD.take() {
             handle.cancel().ok();
         }
